@@ -1,18 +1,19 @@
 from lib.generate_embedding import GenerateEmbedding
 from glove_embeddings import GloveEmbedding
+from lstm_embeddings import LstmEmbedding
 import os
 
 ### Procedure Parameters ###
 
 ### In testing mode: change iterations of generate_embedding.py
-procedure = GloveEmbedding
-procedure_params = [True]
+procedure = LstmEmbedding
+procedure_params = []
 base_directory = "./"
 from_words = True
-generate = True
+generate = False
 
 ### Decoding Parameters ###
-subs = "1" #"1 2 3 4 5 6 7 8"
+subs = "1 2 3 4 5 6 7 8"
 features = "(seq 1 195)"
 
 

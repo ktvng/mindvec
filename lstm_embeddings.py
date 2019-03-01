@@ -1,9 +1,9 @@
 # Wrapper procedure to generate LSTM embedding filetree
 
-from lib.embedding_ procedure import EmbeddingProcedure
+from lib.embedding_procedure import EmbeddingProcedure
 import io
 
-class LstmEmbeddings(EmbeddingProcedure):
+class LstmEmbedding(EmbeddingProcedure):
     size = 1024
     name = 'layer1'
 
