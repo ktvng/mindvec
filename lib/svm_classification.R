@@ -14,6 +14,14 @@ args = commandArgs(trailingOnly=TRUE)
 var_ind <- as.numeric(args[1])
 base <- args[2]
 sub <- args[3]
+
+controller_data = read.csv("controller", sep=',')
+controller_data <- as.matrix(controller_data)
+
+working_directory <- controller_data[1]
+layer <- controller_data[2]
+nnodes <- controller_data[3]
+
 is_dec <- args[4]
 
 if(is_dec == 'yes'){
@@ -21,12 +29,6 @@ if(is_dec == 'yes'){
 } else{
     dec <- ""
 }
-controller_data = read.csv("controller", sep=',')
-controller_data <- as.matrix(controller_data)
-
-working_directory <- controller_data[1]
-layer <- controller_data[2]
-nnodes <- controller_data[3]
 
 asset_directory <- "../assets/"
 
