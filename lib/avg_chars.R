@@ -8,9 +8,14 @@ controller_data <- as.matrix(controller_data)
 working_directory <- controller_data[1]
 layer <- paste(controller_data[2], "_", sep="")
 nnodes <- controller_data[3]
+is_dec <- controller_data[4]
 
-
-dec <- ""#"dec_"
+if(is_dec == 'yes'){
+    dec <- "dec_"
+} else {
+    dec <- ""
+}
+#dec <- ""#"dec_"
 opt <- "TR_" #"TR_", or "sentence_"
 
 #type

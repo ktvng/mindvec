@@ -16,8 +16,8 @@ generate = False
 subs = "1 2 3 4 5 6 7 8"
 features = "(seq 1 195)"
 
+dec = "yes"
 
-###########################
 ###########################
 ###########################
 ###########################
@@ -68,6 +68,7 @@ if(True):
     controller_file.write(working_directory + "\n")
     controller_file.write(procedure.name +"\n")
     controller_file.write(str(procedure.size) +"\n")
+    controller_file.write(dec + "\n")
 
     controller_file.close()
 

@@ -7,14 +7,20 @@ library(e1071)
 library(ROCR)
 library("mltools")
 
-dec = "dec_" #dec_ or ""
+dec = "" #"dec_" #dec_ or ""
 opt = "TR"
 
 args = commandArgs(trailingOnly=TRUE)
 var_ind <- as.numeric(args[1])
 base <- args[2]
 sub <- args[3]
+is_dec <- args[4]
 
+if(is_dec == 'yes'){
+    dec <- 'dec_'
+} else{
+    dec <- ""
+}
 controller_data = read.csv("controller", sep=',')
 controller_data <- as.matrix(controller_data)
 
