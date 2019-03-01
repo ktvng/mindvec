@@ -22,7 +22,7 @@ working_directory <- controller_data[1]
 layer <- controller_data[2]
 nnodes <- controller_data[3]
 
-is_dec <- args[4]
+is_dec <- controller_data[4]
 
 if(is_dec == 'yes'){
     dec <- 'dec_'
