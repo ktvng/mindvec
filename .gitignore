@@ -1,0 +1,13 @@
+
+assets/
+glove/
+lstm/
+
+
+__pycache__/
+
+
+*.pyc
+*.RData
+*.Rhistory
+
