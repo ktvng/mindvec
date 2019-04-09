@@ -1,16 +1,20 @@
 from lib.generate_embedding import GenerateEmbedding
 from glove_embeddings import GloveEmbedding
 from lstm_embeddings import LstmEmbedding
+from elmo_embeddings import ElmoEmbedding
 import os
 
 ### Procedure Parameters ###
 
 ### In testing mode: change iterations of generate_embedding.py
-procedure = LstmEmbedding
-procedure_params = []
+procedure = ElmoEmbedding
+procedure_params = [0]
 base_directory = "./"
-from_words = True
+generate_by_sentence = True
 generate = False
+
+### Conda Enviromnemt ###
+env = "allennlp" # "allennlp", "pykt"
 
 ### Decoding Parameters ###
 subs = "1 2 3 4 5 6 7 8"
@@ -136,7 +140,7 @@ if(True):
     "#SBATCH --time=06:00:00",
     "",
     "module load Python/miniconda",
-    "source activate pykt",
+    "source activate " + env, 
     "python ../lib/decoding.py"
     ]
 
@@ -145,6 +149,9 @@ if(True):
     writescript(path, name, code)
 
 ###########################
-g = GenerateEmbedding(base_directory, procedure, procedure_params)
 if(generate):
-    g.generate_all_context_embeddings()
+    g = GenerateEmbedding(base_directory, procedure, procedure_params)
+    if(generate_by_sentence):
+        g.generate_all_full_sentence_context_embeddings()
+    else:
+        g.generate_all_context_embeddings()

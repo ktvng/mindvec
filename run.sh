@@ -7,6 +7,7 @@
 #SBATCH --mail-user=k.tang@yale.edu
 
 module load Python/miniconda
-source activate pykt 
+# allennlp pykt
+source activate allennlp
 
 python ./runner.py
