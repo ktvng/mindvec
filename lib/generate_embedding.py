@@ -2,7 +2,6 @@ import pickle
 import numpy as np
 import os
 from collections import deque
-from single_sentence_embedder import SingleSentenceEmbedder
 
 class GenerateEmbedding():
     contexts = [0, 1, 2, 4, 16, 1600]
