@@ -11,15 +11,15 @@ class ElmoEmbedding(EmbeddingProcedure):
     # [Integer] layer either {0, 1, 2}
     def __init__(self, base_directory, layer):
         EmbeddingProcedure.__init__(self, base_directory)
-        self.embedder = ElmoEmbedder()
         self.layer = layer
+        self.embedder = ElmoEmbedder()
 
     # Params[0] = [Integer] tr_tokens
     def sentence_embedding(self, sentence, params):
         tr_tokens = params[0]
 
         words = len(sentence)
-        result = self.embedder.embed_sentence(sentence)
+        #result = self.embedder.embed_sentence(sentence)
 
         sentence_embedding = np.zeros(self.embedding_size)
         for i in range(tr_tokens):
@@ -28,5 +28,5 @@ class ElmoEmbedding(EmbeddingProcedure):
         sentence_embedding = sentence_embedding / tr_tokens
 
     def procedure_name(self):
-        self.name + "-layer" + str(self.layer)
+        return self.name + "-layer" + str(self.layer)
         
