@@ -59,11 +59,11 @@ class GenerateEmbedding():
             tr = readfile.readline().strip().split(' ')
             buffer.append(tr)
 
-            context_sentece = []
+            context_sentence = []
             for queued_fragment in buffer:
-                context_sentece += queued_fragment
+                context_sentence += queued_fragment
 
-            tr_embedding = self.procedure.sentence_embedding(tr, [len(tr)])
+            tr_embedding = self.procedure.sentence_embedding(context_sentence, [len(tr)])
 
             np.save(writefile, tr_embedding)
             writefile.close()
