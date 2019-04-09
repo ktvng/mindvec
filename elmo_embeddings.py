@@ -19,7 +19,7 @@ class ElmoEmbedding(EmbeddingProcedure):
         tr_tokens = params[0]
 
         words = len(sentence)
-        #result = self.embedder.embed_sentence(sentence)
+        result = self.embedder.embed_sentence(sentence)
 
         sentence_embedding = np.zeros(self.embedding_size())
         for i in range(tr_tokens):
