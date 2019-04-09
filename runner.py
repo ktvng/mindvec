@@ -31,7 +31,7 @@ proc = procedure(base_directory, *procedure_params)
 
 ### Generate new directories ###
 if(True):
-    working_directory = base_directory + proc.procedure_name + "/"
+    working_directory = base_directory + proc.procedure_name() + "/"
     if(not os.path.exists(working_directory)):
         os.makedirs(working_directory)
 
@@ -72,8 +72,8 @@ if(True):
 
     controller_file.write("start" + "\n")
     controller_file.write(working_directory + "\n")
-    controller_file.write(proc.procedure_name +"\n")
-    controller_file.write(str(proc.embedding_size) +"\n")
+    controller_file.write(proc.procedure_name() +"\n")
+    controller_file.write(str(proc.embedding_size()) +"\n")
     controller_file.write(dec + "\n")
 
     controller_file.close()
@@ -88,7 +88,7 @@ def writescript(path, name, content):
 
 ### Write the svm_runner ###
 if(True):
-    svm_runner_name = proc.procedure_name + "_svm_runner.sh"
+    svm_runner_name = proc.procedure_name() + "_svm_runner.sh"
     svm_runner_file = open(working_directory + svm_runner_name, "w")
 
     svm_runner_file.write("#!/usr/bin/env bash" +"\n")
@@ -129,7 +129,7 @@ if(True):
 
 
     path = working_directory
-    name = proc.procedure_name + "_plot_runner.sh"
+    name = proc.procedure_name() + "_plot_runner.sh"
     writescript(path, name, code)
 
 ### Write the decoder ###
@@ -147,7 +147,7 @@ if(True):
     ]
 
     path = working_directory
-    name = proc.procedure_name + "_decoding_runner.sh"
+    name = proc.procedure_name() + "_decoding_runner.sh"
     writescript(path, name, code)
 
 ###########################
