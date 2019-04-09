@@ -6,8 +6,8 @@ from collections import deque
 class GenerateEmbedding():
     contexts = [0, 1, 2, 4, 16, 1600]
     tr_words_file = "wordsTR.txt"
-    def __init__(self, base_directory, procedure, proc_args):
-        self.procedure = procedure(base_directory, *proc_args)
+    def __init__(self, base_directory, procedure):
+        self.procedure = procedure
         self.base_directory = base_directory
         self.working_directory = base_directory + self.procedure.procedure_name() + "/"
         if(not os.path.exists(self.working_directory)):
