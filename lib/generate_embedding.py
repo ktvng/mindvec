@@ -2,6 +2,7 @@ import pickle
 import numpy as np
 import os
 from collections import deque
+from single_sentence_embedder import SingleSentenceEmbedder
 
 class GenerateEmbedding():
     contexts = [0, 1, 2, 4, 16, 1600]
@@ -14,16 +15,7 @@ class GenerateEmbedding():
 
             os.makedirs(self.working_directory)
 
-#    def embed_all_TRs(self):
-#    	readfile = open(self.base_directory + self.tr_words_file, 'r')
-#    	allTRs = [np.zeros(self.procedure.embedding_size()]*1295
-#    	for i in range(1295):
-#	        tr = readfile.readline().strip.split(' ')
-#            tr_embedding = self.procedure.tr_embedding(tr)
-#         allTRs[0] = tr_embedding
-#
-#	    return allTRs
-
+    # Embeds words using the local TR
     def context_embedding(self, context):
         context_directory = self.working_directory + self.procedure.procedure_name() + "_" + str(context) + "s_TRs/"
         if(not os.path.exists(context_directory)):
@@ -53,6 +45,35 @@ class GenerateEmbedding():
             writefile.close()
         readfile.close()
 
+    def full_sentence_context_embedding(self, context):
+        context_directory = self.working_directory + self.procedure.procedure_name() + "_" + str(context) + "s_TRs/"
+        if(not os.path.exists(context_directory)):
+            os.makedirs(context_directory)
+
+        readfile = open(self.base_directory + self.tr_words_file, 'r')
+
+        buffer = deque(maxlen=(context+1))
+        for i in range(1295):
+            filename = "TR" + str(i+1) + "_" + self.procedure.procedure_name() + "_" + str(context) + "s_embeddings.npy"
+            writefile = open(context_directory + filename, "wb")
+
+            tr = readfile.readline().strip().split(' ')
+            buffer.append(tr)
+
+            context_sentece = []
+            for queued_fragment in buffer:
+                context_sentece += queued_fragment
+
+            tr_embedding = self.procedure.sentence_embedding(tr)
+
+            np.save(writefile, tr_embedding)
+            writefile.close()
+        readfile.close()
+
     def generate_all_context_embeddings(self):
         for context in self.contexts:
             self.context_embedding(context)
+
+    def generate_all_full_sentence_context_embeddings(self):
+        for context in self.contexts:
+            self.singleton_context_embedding(context)
