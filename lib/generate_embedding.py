@@ -49,7 +49,7 @@ class GenerateEmbedding():
         if(not os.path.exists(context_directory)):
             os.makedirs(context_directory)
 
-        readfile = open(self.base_directory + self.tr_words_file, 'r')
+        readfile = open(self.base_directory +"/assets/" + self.tr_words_file, 'r')
 
         buffer = deque(maxlen=(context+1))
         for i in range(1295):
