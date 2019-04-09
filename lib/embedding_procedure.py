@@ -10,7 +10,7 @@ class EmbeddingProcedure():
     def tr_embedding(self, tr):
         pass
 
-    def sentence_embeddng(self, sentence):
+    def sentence_embeddng(self, sentence, params):
         pass
     # Returns the word embedding or empty array if not found
     def word_embedding(self, word):
