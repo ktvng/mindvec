@@ -24,8 +24,9 @@ class ElmoEmbedding(EmbeddingProcedure):
         sentence_embedding = np.zeros(self.embedding_size())
         for i in range(tr_tokens):
             sentence_embedding += result[self.layer][words-1-i]
-
         sentence_embedding = sentence_embedding / tr_tokens
+        
+        return sentence_embedding
 
     def procedure_name(self):
         return self.name + "-layer" + str(self.layer)
