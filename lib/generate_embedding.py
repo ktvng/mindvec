@@ -75,4 +75,4 @@ class GenerateEmbedding():
 
     def generate_all_full_sentence_context_embeddings(self):
         for context in self.contexts:
-            self.singleton_context_embedding(context)
+            self.full_sentence_context_embedding(context)
