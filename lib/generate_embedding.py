@@ -63,7 +63,7 @@ class GenerateEmbedding():
             for queued_fragment in buffer:
                 context_sentece += queued_fragment
 
-            tr_embedding = self.procedure.sentence_embedding(tr)
+            tr_embedding = self.procedure.sentence_embedding(tr, [len(tr)])
 
             np.save(writefile, tr_embedding)
             writefile.close()
