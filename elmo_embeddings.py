@@ -28,5 +28,5 @@ class ElmoEmbedding(EmbeddingProcedure):
         sentence_embedding = sentence_embedding / tr_tokens
 
     def procedure_name():
-        self.name + "-layer" + self.layer
+        self.name + "-layer" + str(self.layer)
         
