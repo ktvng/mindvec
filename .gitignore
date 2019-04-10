@@ -3,6 +3,9 @@ assets/
 glove/
 lstm/
 layer1/
+elmo-layer0/
+elmo-layer1/
+elmo-layer2/
 
 __pycache__/
 
