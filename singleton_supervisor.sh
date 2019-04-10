@@ -5,6 +5,6 @@ for context in $contexts
 do
 for tr in $(seq 500 1295)
 do
-bash ./lib/run_singleton_embedding.sh $context $tr
+sbatch ./lib/run_singleton_embedding.sh $context $tr
 done
 done
