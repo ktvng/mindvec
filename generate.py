@@ -6,6 +6,7 @@ context = int(sys.argv[1])
 tr_id = int(sys.argv[2])
 
 base_directory = "./"
+print("Loading Embedder...")
 proc = ElmoEmbedding(base_directory, 0)
 
 embedder = GenerateSingleton(base_directory, proc)
@@ -13,4 +14,4 @@ embedder = GenerateSingleton(base_directory, proc)
 print("Embedding...")
 embedder.generate(context, tr_id)
 
-print("Finished")
+print("Finished!")
