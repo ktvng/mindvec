@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --partition=long
 #SBATCH --job-name=decode
-#SBATCH --ntasks=32 --nodes=32
+#SBATCH --ntasks=4 --nodes=1
 #SBATCH --time=06:00:00
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=k.tang@yale.edu

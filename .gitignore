@@ -9,6 +9,7 @@ elmo-layer2/
 
 __pycache__/
 
+test*
 
 *.pyc
 *.RData
