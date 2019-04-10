@@ -31,7 +31,6 @@ class GenerateSingleton():
         sent = sent + last_tr
 
         readfile.close()
-        print sent
         return (sent, len(last_tr))
 
     def generate(self, context, tr_id):
