@@ -122,7 +122,7 @@ for (length in lengths) {
     if (long == "_long") {
       f = paste(asset_directory, "fullTR_", length, ".RData", sep="")
     } else {
-      f = paste(asset_directory, "fullTR.RData")
+      f = paste(asset_directory, "fullTR.RData", sep="")
     }
     load(f); Y = fullTR
   } else {
