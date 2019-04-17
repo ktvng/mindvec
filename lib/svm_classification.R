@@ -1,18 +1,20 @@
-#run visualize_features and get_words before this
-#library(caret)
-
-library(reticulate)
-np <- import("numpy")
-library(e1071)
-library(ROCR)
-library("mltools")
-
-dec = "" #"dec_" #dec_ or ""
-opt = "TR"
-
+# Set up parameters
 args = commandArgs(trailingOnly=TRUE)
+# use actual or decoded?
+dec = "wb" # "" or "wb" or "sl5000"
+# predict features in the entire context or just the most recent TR?
+long = "" # "" or "_long" 
+
+# use sentence or TR
+opt = "TR" #sentence or TR
+# shuffle labels? (to get a null results)
+shuffle <- "" # "" or "_shuffled"
+# which variable?
 var_ind <- as.numeric(args[1])
-base <- args[2]
+cat("Variable", var_ind, "\n")
+# which model, which layer?
+base <- args[2] #"layer0" or "layer1" or "glove"
+# which subject?
 sub <- args[3]
 
 controller_data = read.csv("controller", sep=',')
@@ -32,26 +34,29 @@ if(is_dec == 'yes'){
 
 asset_directory <- "../assets/"
 
+#run visualize_features and get_words before this
+#library(caret)
+library(reticulate)
+np <- import("numpy")
+library(e1071)
+library(ROCR)
+library(PRROC)
+library("mltools")
 
-cat("Variable", var_ind, "\n")
-
-
+# define possible context lengths
 if (opt == "TR") {
-  lengths <- c("0s_","1s_", "2s_","4s_","16s_","1600s_"); nlines <- 1295
+  nlines <- 1295
+  if (long == "_long") {
+    lengths <- c("0s_","1s_", "2s_","4s_")  
+  } else {
+    lengths <- c("0s_","1s_", "2s_","4s_","16s_","1600s_")  
+  }
+  
 } else {
   lengths <- c("", "1w_", "2w_", "4w_", "8w_", "16w_", "1s_", "2s_","5s_", "docwise_"); nlines <- 398
 }
 
-
-if (opt == "TR") {
-  load(paste(asset_directory, "fullTR.RData", sep="")); Y = fullTR
-} else {
-  load(paste(asset_directory, "fullSentences_processed.RData", sep="")); Y = fullSentences_processed
-}
-
-cat(names(Y)[var_ind],"\n")
-
-run_svm <- function(xtrain, xtest,y,nfold, kernel="linear") {
+run_svm <- function(xtrain, xtest,y,nfold, kernel) {
   set.seed(1)
 
   dat_train = cbind.data.frame(xtrain,y)
@@ -59,7 +64,7 @@ run_svm <- function(xtrain, xtest,y,nfold, kernel="linear") {
   names(dat_train) <- c(paste("node",1:nnodes,sep=""),"y")
   names(dat_test) <- c(paste("node",1:nnodes,sep=""),"y")
   preds <- rep(NA, length(y))
-
+  
   folds = folds(x=dat_train$y,nfolds=nfold,stratified=TRUE,seed=1)
 
   cat(table(folds), "\n")
@@ -69,37 +74,61 @@ run_svm <- function(xtrain, xtest,y,nfold, kernel="linear") {
   for (i in 1:nfold) {
     train <- dat_train[folds!=i,]
     test <- dat_test[folds==i,]
-    m <- svm(factor(y) ~ ., data=train,
+    m <- svm(factor(y) ~ ., data=train, probability=TRUE,
                    gamma=1, kernel = kernel, cost = 1)
-    preds[folds==i] <- as.logical(predict(m, newdata=test))
+    tmp <- predict(m, newdata=test, probability=TRUE)
+    #preds[folds==i] <- tmp
+    preds[folds==i] <- attr(tmp,'probabilities')[,'TRUE']
   }
+  
+  #PR curve analysis
+  positive_scores <- preds[y==TRUE]
+  negative_scores <- preds[y==FALSE]
+  pr<-pr.curve(scores.class0 = positive_scores, scores.class1 = negative_scores)
+  pr_auc <- pr$auc.integral
+  print(paste("PR AUC:", pr_auc))
 
   #ROC curve analysis
-  pred_object <- prediction(as.numeric(preds), y)
-  auc <- slot(performance(pred_object, "auc"),"y.values")[[1]]
-  acc <- max(slot(performance(pred_object, "acc"), "y.values")[[1]],na.rm=TRUE)
-  f <- max(slot(performance(pred_object, "f"), "y.values")[[1]],na.rm=TRUE)
+  roc<-roc.curve(scores.class0 = positive_scores, scores.class1 = negative_scores)
+  roc_auc <- roc$auc
+  print(paste("ROC AUC:", roc_auc))
 
-  print("Confusion matrix:")
-  cm <- table(preds, y)
-  print(cm)
-  print(paste("Accuracy =", acc))
-  print(paste("AUC =", auc))
-  print(paste("f =", f))
-
-  return(list('preds'=preds, 'cm'=cm, 'acc'=acc, 'auc'=auc, 'f'=f))
+  #ROC curve analysis
+  #pred_object <- prediction(as.numeric(preds), y)
+  #auc <- slot(performance(pred_object, "auc"),"y.values")[[1]]
+  #acc <- max(slot(performance(pred_object, "acc"), "y.values")[[1]],na.rm=TRUE)
+  #f <- max(slot(performance(pred_object, "f"), "y.values")[[1]],na.rm=TRUE)
+  
+  #print("Confusion matrix:") 
+  #cm <- table(preds, y)
+  #print(cm)
+  #print(paste("Accuracy =", acc))
+  #print(paste("AUC =", auc))
+  #print(paste("f =", f))
+  
+  return(list('preds'=preds, 'pr_auc'=pr_auc, 'roc_auc'=roc_auc))
+  #return(list('preds'=preds, 'cm'=cm, 'acc'=acc, 'auc'=auc, 'f'=f))
 
 }
 
 train_embeddings_filename <- paste(opt, "_", layer, "_context_embeddings.RData", sep="")
 load(train_embeddings_filename)
 
-aucs <- list()
-cms <- list()
-accs <- list()
-fs <- list()
-
+pr_aucs <- list()
+roc_aucs <- list()
 for (length in lengths) {
+
+  if (opt == "TR") {
+    if (long == "_long") {
+      f = paste(asset_directory, "fullTR_", length, ".RData", sep="")
+    } else {
+      f = paste(asset_directory, "fullTR.RData")
+    }
+    load(f); Y = fullTR
+  } else {
+    load("fullSentences_processed.RData"); Y = fullSentences_processed
+  }
+  cat(names(Y)[var_ind],"\n")
 
   context <- paste(layer,length,sep="_")
 
@@ -111,6 +140,15 @@ for (length in lengths) {
     test_embeddings <- get(context)
   }
 
+  # if (dec!="") {
+  #   setwd(path_to_embeddings)
+  #   # for GloVe, that data is here: /gpfs/milgram/project/chun/kxt3/official/glove
+  #   test_embeddings <- np$load(paste("subject", sub, "_", dec, "_", length, "decoded.npy", sep=""))
+  #   setwd(output_path)
+  # } else {
+  #   test_embeddings <- get(context)
+  # }
+
   cat("Context:", context,"\n")
 
   set.seed(1)
@@ -121,15 +159,23 @@ for (length in lengths) {
   var <- Y[shuffle_inds,var_ind]
 
   #binarize var, whatever it is
-  var <- var > 0
+  var <- var > 0  
+
+  # shuffle (for perm test)
+  if (shuffle=="_shuffled") {
+    var <- sample(var)
+  }
 
   #run svm prediction
-  preds <- run_svm(train_embeddings,test_embeddings,var,20)
+  xtrain<-train_embeddings
+  xtest<-test_embeddings
+  y<-var
+  nfold<-20
+  kernel<-"linear"
+  preds <- run_svm(xtrain,xtest,y,nfold,kernel)
 
-  aucs[context] <- preds$auc
-  accs[context] <- preds$acc
-  fs[context] <- preds$f
-  cms[context] <- preds$cm
+  pr_aucs[context] <- preds$pr_auc
+  roc_aucs[context] <- preds$roc_auc
 
 }
 
@@ -143,4 +189,5 @@ if (dec == "dec_") {
   setwd(output_dir)
 }
 
-save(aucs,file=paste("subject", sub, "_wb_", dec, opt, "_", layer ,"_", varname, "_aucs.RData", sep=""))
+f <- paste("subject", sub, "_", dec, "_", opt, "_", layer ,"_", varname, long, shuffle, "_aucs.RData", sep="")
+save(pr_aucs, roc_aucs,file=f)
